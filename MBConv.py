@@ -34,9 +34,11 @@ def drop_connect(inputs, survival_prob):
     #非training階段，直接返回
     #根據機率隨機Drop某個Block
     random_tensor = survival_prob
-    random_tensor += tf.random.uniform([1], dtype=inputs.dtype)
+    batch_size = tf.shape(inputs)[0]
+    random_tensor += tf.random.uniform([batch_size, 1, 1, 1], dtype=inputs.dtype)
     binary_tensor = tf.floor(random_tensor)
     output = tf.math.divide(inputs, survival_prob) * binary_tensor
+    #tf.print('learn phase:', tf.keras.backend.learning_phase())
     return tf.keras.backend.in_train_phase(output, inputs)
 
 class act_layer(tf.keras.layers.Layer):
